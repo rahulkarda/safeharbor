@@ -25,6 +25,7 @@ function initializeSchema() {
     CREATE TABLE IF NOT EXISTS users (
       id          TEXT PRIMARY KEY,
       email       TEXT NOT NULL UNIQUE,
+      name        TEXT NOT NULL DEFAULT '',
       password_hash TEXT NOT NULL,
       created_at  TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
       last_login  TEXT
@@ -76,6 +77,16 @@ function initializeSchema() {
   `);
 
   seedCrisisContacts();
+  migrateSchema();
+}
+
+function migrateSchema() {
+  // Add name column to users if it doesn't exist (for existing DBs)
+  const cols = db.prepare("PRAGMA table_info(users)").all();
+  const hasName = cols.some(c => c.name === 'name');
+  if (!hasName) {
+    db.exec("ALTER TABLE users ADD COLUMN name TEXT NOT NULL DEFAULT ''");
+  }
 }
 
 function seedCrisisContacts() {

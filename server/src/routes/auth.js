@@ -18,10 +18,10 @@ const TOKEN_TTL = '7d';
 
 function signToken(user) {
   return jwt.sign(
-    { sub: user.id, email: user.email },
+    { sub: user.id, email: user.email, name: user.name },
     process.env.JWT_SECRET,
     { expiresIn: TOKEN_TTL }
-  );
+  )
 }
 
 function validateEmail(email) {
@@ -33,7 +33,7 @@ function validateEmail(email) {
 // ---------------------------------------------------------------------------
 router.post('/register', async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, name = '' } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required.' });
@@ -58,11 +58,11 @@ router.post('/register', async (req, res) => {
     const now = new Date().toISOString();
 
     db.prepare(`
-      INSERT INTO users (id, email, password_hash, created_at)
-      VALUES (?, ?, ?, ?)
-    `).run(id, email.toLowerCase(), passwordHash, now);
+      INSERT INTO users (id, email, name, password_hash, created_at)
+      VALUES (?, ?, ?, ?, ?)
+    `).run(id, email.toLowerCase(), name.trim(), passwordHash, now);
 
-    const user = { id, email: email.toLowerCase() };
+    const user = { id, email: email.toLowerCase(), name: name.trim() };
     const token = signToken(user);
 
     return res.status(201).json({ token, user });
@@ -106,6 +106,7 @@ router.post('/login', async (req, res) => {
       user: {
         id: user.id,
         email: user.email,
+        name: user.name,
         created_at: user.created_at,
         last_login: now,
       },
@@ -123,7 +124,7 @@ router.get('/me', requireAuth, (req, res) => {
   try {
     const db = getDb();
     const user = db
-      .prepare('SELECT id, email, created_at, last_login FROM users WHERE id = ?')
+      .prepare('SELECT id, email, name, created_at, last_login FROM users WHERE id = ?')
       .get(req.user.id);
 
     if (!user) {

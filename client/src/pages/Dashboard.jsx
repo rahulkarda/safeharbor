@@ -38,11 +38,16 @@ const fadeUp = {
 }
 
 const MOOD_LABELS = {
-  1: { label: 'Very low', emoji: '😔', color: '#E05A5A' },
-  2: { label: 'Low', emoji: '😞', color: '#F5A623' },
-  3: { label: 'Okay', emoji: '😐', color: '#9B8EC4' },
-  4: { label: 'Good', emoji: '🙂', color: '#4A9B8F' },
-  5: { label: 'Great', emoji: '😊', color: '#2D7A6F' },
+  1: { label: 'Struggling', emoji: '😢', color: '#E05A5A' },
+  2: { label: 'Very low', emoji: '😞', color: '#E07A5A' },
+  3: { label: 'Low', emoji: '😔', color: '#F5A623' },
+  4: { label: 'Below okay', emoji: '😕', color: '#F5C623' },
+  5: { label: 'Okay', emoji: '😐', color: '#9B8EC4' },
+  6: { label: 'Getting there', emoji: '🙂', color: '#7B9EC4' },
+  7: { label: 'Good', emoji: '😊', color: '#4A9B8F' },
+  8: { label: 'Pretty good', emoji: '😄', color: '#3A8B7F' },
+  9: { label: 'Great', emoji: '😁', color: '#2D7A6F' },
+  10: { label: 'Amazing', emoji: '🌟', color: '#1D6A5F' },
 }
 
 const QUICK_ACTIONS = [
@@ -112,12 +117,12 @@ function buildSparklineData(moodEntries) {
   })
 
   moodEntries.forEach((entry) => {
-    const entryDate = startOfDay(new Date(entry.createdAt || entry.date))
+    const entryDate = startOfDay(new Date(entry.created_at || entry.createdAt || entry.date))
     const dayData = days.find(
       (d) => startOfDay(d.date).getTime() === entryDate.getTime()
     )
     if (dayData) {
-      dayData.value = entry.mood || entry.score || entry.value
+      dayData.value = entry.score || entry.mood || entry.value
     }
   })
 
@@ -147,8 +152,13 @@ export default function Dashboard() {
   const { data: wellnessTips } = useWellnessTips()
   const { data: affirmations } = useAffirmations()
 
-  const todaysMood = getMoodEntryToday()
   const moodEntries = moodEntriesData || []
+  const todaysMood = useMemo(() => {
+    const today = new Date().toDateString()
+    return moodEntries.find(
+      (e) => new Date(e.created_at || e.createdAt || e.date).toDateString() === today
+    ) || null
+  }, [moodEntries])
 
   const { greeting, Icon: GreetingIcon } = getGreeting(user?.name)
 
@@ -158,7 +168,9 @@ export default function Dashboard() {
     const dayOfYear = Math.floor(
       (new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000
     )
-    return wellnessTips[dayOfYear % wellnessTips.length]
+    const item = wellnessTips[dayOfYear % wellnessTips.length]
+    // Server returns {id, category, tip} objects; fallback returns plain strings
+    return typeof item === 'object' ? item.tip : item
   }, [wellnessTips])
 
   // Daily affirmation
@@ -167,7 +179,9 @@ export default function Dashboard() {
     const dayOfYear = Math.floor(
       (new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000
     )
-    return affirmations[(dayOfYear + 3) % affirmations.length]
+    const item = affirmations[(dayOfYear + 3) % affirmations.length]
+    // Server returns {id, text} objects; fallback returns plain strings
+    return typeof item === 'object' ? item.text : item
   }, [affirmations])
 
   const sparklineData = useMemo(() => buildSparklineData(moodEntries), [moodEntries])
@@ -252,12 +266,12 @@ export default function Dashboard() {
         <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={1} className="mb-6">
           <div className="bg-primary-light border border-primary/20 rounded-2xl p-5 flex items-center gap-4">
             <span className="mood-emoji">
-              {MOOD_LABELS[todaysMood.mood || todaysMood.score]?.emoji || '🙂'}
+              {MOOD_LABELS[todaysMood.score || todaysMood.mood]?.emoji || '🙂'}
             </span>
             <div className="flex-1">
               <p className="text-sm text-text-muted">Today's mood</p>
               <p className="font-semibold text-text-primary">
-                {MOOD_LABELS[todaysMood.mood || todaysMood.score]?.label || 'Logged'}
+                {MOOD_LABELS[todaysMood.score || todaysMood.mood]?.label || 'Logged'}
               </p>
             </div>
             <Link to="/mood" className="text-xs font-medium text-primary hover:underline">
@@ -332,8 +346,8 @@ export default function Dashboard() {
                   tickLine={false}
                 />
                 <YAxis
-                  domain={[1, 5]}
-                  ticks={[1, 2, 3, 4, 5]}
+                  domain={[1, 10]}
+                  ticks={[1, 3, 5, 7, 10]}
                   tick={{ fontSize: 10, fill: '#8FA0AD' }}
                   axisLine={false}
                   tickLine={false}

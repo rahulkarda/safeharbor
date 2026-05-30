@@ -298,7 +298,7 @@ export function useAffirmations(options = {}) {
     queryKey: QUERY_KEYS.affirmations,
     queryFn: async () => {
       try {
-        const { data } = await apiClient.get('/affirmations')
+        const { data } = await apiClient.get('/wellness/affirmations')
         return data
       } catch {
         return FALLBACK_AFFIRMATIONS
