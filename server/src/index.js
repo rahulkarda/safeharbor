@@ -27,7 +27,7 @@ const app = express();
 app.use(helmet());
 
 // CORS – allow the React / React Native client origins
-const ALLOWED_ORIGINS = (process.env.CORS_ORIGINS || 'http://localhost:5173,http://localhost:3000,http://localhost:19006')
+const ALLOWED_ORIGINS = (process.env.CORS_ORIGINS || 'http://localhost:5173,http://localhost:3000,http://localhost:19006,https://rahulkarda.github.io')
   .split(',')
   .map((o) => o.trim());
 

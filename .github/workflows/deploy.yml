@@ -35,7 +35,7 @@ jobs:
         working-directory: client
         run: npm run build
         env:
-          VITE_API_URL: ''
+          VITE_API_URL: 'https://safeharbor-production.up.railway.app/api'
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
