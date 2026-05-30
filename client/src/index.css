@@ -1,0 +1,113 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-surface text-text-primary font-sans;
+  }
+
+  * {
+    @apply box-border;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl
+           bg-primary text-white font-medium text-sm
+           hover:bg-primary-dark active:scale-95
+           transition-all duration-200 shadow-soft
+           focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl
+           bg-white text-primary font-medium text-sm border border-primary/30
+           hover:bg-primary-light active:scale-95
+           transition-all duration-200
+           focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg
+           text-text-secondary font-medium text-sm
+           hover:bg-surface-muted active:scale-95
+           transition-all duration-200;
+  }
+
+  .card {
+    @apply bg-white rounded-2xl shadow-card p-5;
+  }
+
+  .card-hover {
+    @apply card hover:shadow-card-hover transition-shadow duration-300 cursor-pointer;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-2.5 rounded-xl border border-gray-200
+           bg-white text-text-primary text-sm
+           placeholder:text-text-muted
+           focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary
+           transition-all duration-200;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium;
+  }
+
+  .page-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-heading {
+    @apply text-xl font-semibold text-text-primary;
+  }
+
+  .section-subheading {
+    @apply text-sm text-text-secondary;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-surface-muted rounded-full;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-primary/30 rounded-full hover:bg-primary/50;
+}
+
+/* Mood emoji sizing */
+.mood-emoji {
+  font-size: 1.75rem;
+  line-height: 1;
+  user-select: none;
+}
+
+/* Breathing animation ring */
+@keyframes breathe-expand {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.4); opacity: 0.2; }
+}
+
+.breathe-ring {
+  animation: breathe-expand 4s ease-in-out infinite;
+}
