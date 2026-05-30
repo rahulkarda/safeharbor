@@ -1,6 +1,9 @@
 [build]
 builder = "nixpacks"
-buildCommand = "npm install"
+buildCommand = "npm ci"
+
+[build.nixpacksPlan.phases.setup]
+nixPkgs = ["nodejs_20", "python3", "gcc", "gnumake"]
 
 [deploy]
 startCommand = "node src/index.js"
