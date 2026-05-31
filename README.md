@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🌊 SafeHarbor
+# SafeHarbor
 
 ### Mental health first aid — for the 3am moments.
 
